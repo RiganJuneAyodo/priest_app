@@ -115,7 +115,9 @@ class _MenuState extends State<Menu> {
                 ),
                 onPressed: () {
                   Navigator.of(this.context).push(MaterialPageRoute(
-                      builder: (context) => new PlaylistMaker()));
+                      builder: (context) => new PlaylistMaker(
+                            playlistNo: 1,
+                          )));
                 },
               ),
               SizedBox(

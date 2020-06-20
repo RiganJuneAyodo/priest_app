@@ -8,9 +8,9 @@ import 'package:musicapp/player.dart';
 import 'package:musicapp/profile.dart';
 import 'package:musicapp/register.dart';
 
+import 'Model/music_model.dart';
 import 'category.dart';
 import 'help_screen.dart';
-import 'lib3/LISTOFPLAYLISTS.dart';
 import 'login.dart';
 import 'menu.dart';
 
@@ -37,7 +37,9 @@ class MyApp extends StatelessWidget {
         '/profile': (context) => Profile(),
         '/player': (context) => Player(),
       },
-      home: new LISTOFPLAYLISTS(),
+      home: new Player(
+        selectedSlot: new Map<String, Music>(),
+      ),
 //      home: new PlaylistMaker(),
     );
   }

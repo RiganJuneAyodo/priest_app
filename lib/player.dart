@@ -1,16 +1,15 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_xlider/flutter_xlider.dart';
-import 'package:percent_indicator/percent_indicator.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'Model/music_model.dart';
 import 'Utils/GlobalFuncs.dart';
-import 'Utils/global_vars.dart';
-import 'Utils/play_button.dart';
-import 'main.dart';
 
 class Player extends StatefulWidget {
+  final Map<String, Music> selectedSlot;
+  Player({Key key, this.selectedSlot}) : super(key: key);
+
   @override
   _PlayerState createState() => _PlayerState();
 }
@@ -34,7 +33,7 @@ class _PlayerState extends State<Player> {
   void initState() {
     super.initState();
     setState(() {
-      _selectedMusic = GlobalVars.selectedMusic;
+      _selectedMusic = widget.selectedSlot;
       for (String key in _selectedMusic.keys) {
         if (key != null) {
           currentPlayingSlot = key;
@@ -69,17 +68,11 @@ class _PlayerState extends State<Player> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: GlobalFunc.colorFromHex("#0D0C0C").withOpacity(.5),
+      backgroundColor: GlobalFunc.colorFromHex("#241332").withOpacity(.5),
       appBar: AppBar(
         elevation: 0,
+        backgroundColor: GlobalFunc.colorFromHex("#352641"),
         centerTitle: true,
-        title: Text(
-          "Liturgia Mixer",
-          style: TextStyle(
-              color: Main.primaryColor,
-              fontWeight: FontWeight.bold,
-              fontSize: 18),
-        ),
         actions: <Widget>[
           GestureDetector(
             onTap: () {
@@ -89,12 +82,11 @@ class _PlayerState extends State<Player> {
               padding: EdgeInsets.fromLTRB(0, 0, 30, 0),
               child: Icon(
                 Icons.menu,
-                color: Main.primaryColor,
+                color: Colors.white,
               ),
             ),
           )
         ],
-        flexibleSpace: GlobalFunc.appBarGradient(),
       ),
       body: _body(),
     );
@@ -102,13 +94,15 @@ class _PlayerState extends State<Player> {
 
   Widget _body() {
     return Container(
-      padding: EdgeInsets.only(top: 10, left: 5),
       child: Column(
         //Main page
         children: <Widget>[
           //PlayList
           selectedPlayList(),
 
+          SizedBox(
+            height: 10,
+          ),
           activeSongName(),
 
           playGround()
@@ -120,23 +114,24 @@ class _PlayerState extends State<Player> {
   Widget selectedPlayList() {
     return Expanded(
         flex: 3,
-        child: _selectedMusic.length > 0
-            ? Column(
-                children: <Widget>[
-                  Expanded(
-                    child: playList(0),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Expanded(
-                    child: playList(4),
-                  )
-                ],
+        child: Container(
+          decoration: BoxDecoration(
+              color: GlobalFunc.colorFromHex('#352641'),
+              borderRadius: BorderRadius.only(bottomLeft: Radius.circular(50))),
+          child: Column(
+            children: <Widget>[
+              Expanded(
+                child: playList(0),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Expanded(
+                child: playList(4),
               )
-            : Center(
-                child: GlobalFunc.titleWidget('Montserrat_SemiBold',
-                    'Playlist is empty!', 16.0, Colors.white)));
+            ],
+          ),
+        ));
   }
 
   Widget activeSongName() {
@@ -144,24 +139,22 @@ class _PlayerState extends State<Player> {
       flex: 2,
       child: Column(
         children: <Widget>[
-          Divider(
-            color: GlobalFunc.colorFromHex('#E5E5E5'),
-          ),
           Container(
-            padding: EdgeInsets.only(top: 20, bottom: 20),
+            padding: EdgeInsets.only(top: 5, bottom: 5, left: 30, right: 30),
+            decoration: BoxDecoration(
+                color: GlobalFunc.colorFromHex('#101010'),
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+                border: Border.all(color: GlobalFunc.colorFromHex('#3C3B3B'))),
             child: Text(
                 currentPlayingSlot != null
                     ? _selectedMusic[currentPlayingSlot].title
-                    : "Song",
+                    : "SONG PLAYING",
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                     fontFamily: 'Montserrat_SemiBold',
-                    fontSize: 30.0,
-                    color: GlobalFunc.colorFromHex('#E5E5E5'))),
+                    fontSize: 26.0,
+                    color: GlobalFunc.colorFromHex('#00FF45'))),
           ),
-          Divider(
-            color: GlobalFunc.colorFromHex('#E5E5E5'),
-          )
         ],
       ),
     );
@@ -173,154 +166,39 @@ class _PlayerState extends State<Player> {
       child: Center(
         child: (Column(
           children: <Widget>[
-            new CircularPercentIndicator(
-              radius: 140.0,
-              lineWidth: 10.0,
-              percent: currentPlayerPos,
-              backgroundColor: GlobalFunc.colorFromHex("#000000"),
-              progressColor: GlobalFunc.colorFromHex("#00F8FF"),
-              center: Container(
-//                  margin: EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-//                      color: GlobalFunc.colorFromHex('#222222'),
-                      borderRadius: BorderRadius.circular(200),
-                      border: Border.all(
-                          width: 10,
-                          color: GlobalFunc.colorFromHex("#222222")
-                              .withOpacity(.8))),
-                  child: UnicornOutlineButton(
-                    strokeWidth: 1,
-                    radius: 200,
-                    gradient: LinearGradient(
-                      colors: [
-                        GlobalFunc.colorFromHex("#00F8FF"),
-//                            GlobalFunc.colorFromHex("#08FAFF"),
-                        GlobalFunc.colorFromHex("#000000")
-                      ],
-                    ),
-                    child: Container(
-                      decoration: BoxDecoration(
-                          color: GlobalFunc.colorFromHex('#292525'),
-                          shape: BoxShape.circle),
-                      child: InkWell(
-                        child: AudioPlayerState.PLAYING == state
-                            ? Icon(
-                                Icons.pause,
-                                size: 100,
-                                color: GlobalFunc.colorFromHex('#00FF62'),
-                              )
-                            : Icon(
-                                Icons.play_arrow,
-                                size: 100,
-                                color: GlobalFunc.colorFromHex('#00FF62'),
-                              ),
-                      ),
-                    ),
-                    onPressed: () async {
-                      if (AudioPlayerState.PLAYING == state) {
-                        //pause when playing
-                        await audioPlayer.pause();
-                      }
-
-                      if (AudioPlayerState.PAUSED == state) {
-                        //resume if paused
-                        await audioPlayer.resume();
-                      }
-
-                      if (AudioPlayerState.STOPPED == state) {
-                        //play if stopped
-                        playVAudio();
-                      }
-                    },
-                  )),
-            ),
+            //Player
             Expanded(
               flex: 1,
-              child: Row(
-                children: <Widget>[
-                  //Musica
-                  GlobalFunc.boldtitleWidget('Montserrat_SemiBold', 'MUSICA',
-                      16.0, GlobalFunc.colorFromHex('#E5E5E5')),
-                  SizedBox(
-                    width: 10,
-                  ),
-
-                  Expanded(
-                    child: SizedBox(
-                      height: 100,
-                      child: Column(
-                        children: <Widget>[
-                          trackPoints(),
-                          Expanded(
-                            child: SizedBox(
-                              height: 30,
-                              child: FlutterSlider(
-                                values: [50],
-                                min: 1,
-                                max: 100,
-                                touchSize: 20,
-                                decoration: BoxDecoration(
-                                    border: Border.all(
-                                        width: 3,
-                                        color:
-                                            GlobalFunc.colorFromHex('#222222')),
-                                    borderRadius: BorderRadius.circular(12),
-                                    color: GlobalFunc.colorFromHex('#222222')
-                                        .withOpacity(0.5)),
-                                handler: FlutterSliderHandler(
-                                  decoration: BoxDecoration(),
-                                  child: Material(
-                                    type: MaterialType.button,
-                                    color: Colors.transparent,
-                                    elevation: 3,
-                                    child: Container(
-                                      height: 40,
-                                      width: 100,
-                                      decoration: new BoxDecoration(
-                                          color: GlobalFunc.colorFromHex(
-                                              '##222222'),
-                                          border: Border.all(
-                                              color: Colors.black, width: .0),
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(10))),
-                                      padding: EdgeInsets.all(5),
-                                      child: VerticalDivider(
-                                        width: 10,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                  ),
+              child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                      color: GlobalFunc.colorFromHex('#352641'),
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(50),
+                          topRight: Radius.circular(50))),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                            color: GlobalFunc.colorFromHex('#6352AB'),
+                            shape: BoxShape.circle),
+                        child: InkWell(
+                          child: AudioPlayerState.PLAYING == state
+                              ? Icon(
+                                  Icons.pause,
+                                  size: 100,
+                                  color: GlobalFunc.colorFromHex('#00FF62'),
+                                )
+                              : Icon(
+                                  Icons.play_arrow,
+                                  size: 100,
+                                  color: GlobalFunc.colorFromHex('#00FF62'),
                                 ),
-                                trackBar: FlutterSliderTrackBar(
-                                  inactiveTrackBar: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
-                                    color: GlobalFunc.colorFromHex('#000000'),
-                                    border: Border.all(
-                                        width: 4, color: Colors.blue),
-                                  ),
-                                  activeTrackBar: BoxDecoration(
-                                      border: Border.all(
-                                          width: 3, color: Colors.transparent),
-                                      borderRadius: BorderRadius.circular(4),
-                                      color: GlobalFunc.colorFromHex('#00F8FF')
-                                          .withOpacity(0.6)),
-                                ),
-                              ),
-                            ),
-                          ),
-                          trackPoints(),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(
-                    width: 10,
-                  ),
-                  GlobalFunc.boldtitleWidget('Montserrat_SemiBold', 'VOX', 16.0,
-                      GlobalFunc.colorFromHex('#E5E5E5')),
-                ],
-              ),
+                        ),
+                      )
+                    ],
+                  )),
             )
           ],
         )),
@@ -335,14 +213,7 @@ class _PlayerState extends State<Player> {
       itemBuilder: (BuildContext context, int index) {
         var slotNo = fromIndex + index + 1;
         Music music = _selectedMusic['${slotNo}'];
-        if (music != null) {
-          return musicSlots(music, slotNo);
-        } else {
-          return Visibility(
-            visible: false,
-            child: Text("HOME"),
-          );
-        }
+        return musicSlots(music, slotNo);
       },
     );
   }
@@ -359,17 +230,36 @@ class _PlayerState extends State<Player> {
                 playVAudio();
               });
             },
-            child: CircleAvatar(
-              radius: 30,
-              backgroundColor: GlobalVars.colorLib[slotNo - 1],
-              child: Text('$slotNo'),
-            ),
+            child: new Container(
+                child: new CircleAvatar(
+                  child: Text(
+                    '$slotNo',
+                    style: TextStyle(
+                        color: GlobalFunc.colorFromHex('#000000'),
+                        fontSize: 24),
+                  ),
+                  radius: 63,
+                  backgroundColor: slotNo == 1
+                      ? GlobalFunc.colorFromHex('#00FF45')
+                      : GlobalFunc.colorFromHex('#522B83'),
+                ),
+                width: 63.0,
+                height: 63.0,
+                padding: const EdgeInsets.all(1.0), // borde width
+                decoration: new BoxDecoration(
+                  color: GlobalFunc.colorFromHex('#898989'), // border color
+                  shape: BoxShape.circle,
+                )),
           ),
           SizedBox(
             height: 5,
           ),
-          GlobalFunc.titleWidget(
-              'Montserrat_SemiBold', music.title, 12.0, Colors.white)
+          Text(
+            music != null && music.title != null && music.title.isNotEmpty
+                ? music.title
+                : "Song Name",
+            style: GoogleFonts.montserrat(color: Colors.white, fontSize: 12.0),
+          ),
         ],
       ),
     );

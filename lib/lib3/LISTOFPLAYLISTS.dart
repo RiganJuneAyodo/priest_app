@@ -9,6 +9,7 @@ class LISTOFPLAYLISTS extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xffffffff),
+      appBar: AppBar(),
       body: Stack(
         children: <Widget>[
           // Adobe XD layer: 'Screen Background' (shape)
@@ -21,8 +22,6 @@ class LISTOFPLAYLISTS extends StatelessWidget {
             child:
                 // Adobe XD layer: 'Menu BG' (shape)
                 Container(
-              width: 375.0,
-              height: 812.0,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment(0.0, -1.0),
@@ -366,24 +365,6 @@ class LISTOFPLAYLISTS extends StatelessWidget {
                   ),
                 ),
               ],
-            ),
-          ),
-          Transform.translate(
-            offset: Offset(60.0, 18.67),
-            child: SizedBox(
-              width: 256.0,
-              height: 22.0,
-              child: Text(
-                'LISTA SCALETTE',
-                style: TextStyle(
-                  fontFamily: 'Montserrat',
-                  fontSize: 18,
-                  color: const Color(0xff522b83),
-                  fontWeight: FontWeight.w600,
-                  height: 1.5555555555555556,
-                ),
-                textAlign: TextAlign.center,
-              ),
             ),
           ),
           Transform.translate(

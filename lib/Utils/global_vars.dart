@@ -22,5 +22,5 @@ class GlobalVars {
   static Color widgetColor = GlobalFunc.colorFromHex('#7B52AB');
 
   static List<Music> cachedMusic = new List<Music>();
-  static Map<String, Music> selectedMusic = new Map<String, Music>();
+  static Map<int, Map<int, Music>> playlist = new Map<int, Map<int, Music>>();
 }

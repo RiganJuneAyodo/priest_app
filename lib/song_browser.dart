@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -5,11 +7,14 @@ import 'package:flutter/material.dart';
 import 'Model/music_model.dart';
 import 'Utils/GlobalFuncs.dart';
 import 'Utils/global_vars.dart';
+import 'globalwidget.dart';
 import 'main.dart';
 
 class SongBrowser extends StatefulWidget {
+  final int playlistNo;
   final int slotNo;
-  SongBrowser({Key, key, this.slotNo}) : super(key: key);
+
+  SongBrowser({Key, key, this.playlistNo, this.slotNo}) : super(key: key);
 
   @override
   _SongBrowserState createState() => _SongBrowserState();
@@ -85,28 +90,28 @@ class _SongBrowserState extends State<SongBrowser> {
             "Sccegli Brano", 20.0, GlobalFunc.colorFromHex('#522B83')),
         flexibleSpace: GlobalFunc.appBarGradient(),
       ),
-      body: slots(),
+      body: Container(
+          decoration: BoxDecoration(
+              gradient: GlobalWidget.gradient('#6352AB', '#7B52AB')),
+          child: slots()),
     );
   }
 
   Widget slots() {
-    return Container(
-      child: Column(
-        children: <Widget>[
-          browserTitle(),
-          SizedBox(
-            height: 10,
-          ),
-          Divider(
-            color: GlobalVars.borderColor,
-            thickness: 2,
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          displayMusic()
-        ],
-      ),
+    return Column(
+      children: <Widget>[
+        SizedBox(
+          height: 10,
+        ),
+        browserTitle(),
+        SizedBox(
+          height: 10,
+        ),
+        SizedBox(
+          height: 10,
+        ),
+        displayMusic()
+      ],
     );
   }
 
@@ -120,7 +125,13 @@ class _SongBrowserState extends State<SongBrowser> {
               itemCount: music.length,
               itemBuilder: (BuildContext context, int index) {
                 Music in_music = music[index];
-                return indMusic(in_music);
+                return Column(children: [
+                  Divider(
+                    thickness: 1.2,
+                    color: GlobalFunc.colorFromHex('#542D84'),
+                  ),
+                  indMusic(in_music),
+                ]);
               },
             ),
           )
@@ -141,7 +152,11 @@ class _SongBrowserState extends State<SongBrowser> {
                     EdgeInsets.symmetric(vertical: 5, horizontal: 18),
                 title: Text(
                   music.title,
-                  style: TextStyle(fontFamily: 'Montserrat_SemiBold'),
+                  style: TextStyle(
+                      fontFamily: 'Montserrat_SemiBold',
+                      color: GlobalFunc.colorFromHex('#FFFFFF'),
+                      fontSize: 16,
+                      fontWeight: FontWeight.normal),
                 ),
                 trailing: SizedBox(
                   width: 250,
@@ -164,9 +179,6 @@ class _SongBrowserState extends State<SongBrowser> {
 //            print(index.toString());
                 },
               ),
-              Divider(
-                color: GlobalVars.borderColor,
-              )
             ],
           )
         : Visibility(
@@ -182,12 +194,12 @@ class _SongBrowserState extends State<SongBrowser> {
       decoration: BoxDecoration(
         border: Border.all(
             color: GlobalFunc.colorFromHex('#222222'),
-            width: isPreview ? 1.5 : 0),
+            width: isPreview ? 0 : 2),
       ),
       child: FlatButton(
         color: isPreview
             ? GlobalFunc.colorFromHex('#F1E7FC')
-            : GlobalFunc.colorFromHex('#7B52AB'),
+            : GlobalFunc.colorFromHex('#833DBF'),
         child: GlobalFunc.titleWidget(
             'Montserrat_SemiBold',
             isPreview
@@ -206,10 +218,7 @@ class _SongBrowserState extends State<SongBrowser> {
 //              }
 //            }
 
-            print('slotNo: ' + widget.slotNo.toString());
-
-            int slotNo = widget.slotNo;
-            GlobalVars.selectedMusic['$slotNo'] = music;
+            GlobalVars.playlist[widget.playlistNo] = {widget.slotNo: music};
             Navigator.pop(this.context);
           }
         },
@@ -225,7 +234,7 @@ class _SongBrowserState extends State<SongBrowser> {
                 'Montserrat_SemiBold',
                 loadingMusic ? 'Loading...' : "Music",
                 30.0,
-                GlobalFunc.colorFromHex('#222222'))));
+                GlobalFunc.colorFromHex('#FFFFFF'))));
   }
 
   play(Music music) async {

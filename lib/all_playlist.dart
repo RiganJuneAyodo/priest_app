@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:musicapp/playlist_maker.dart';
 import 'package:musicapp/song_browser.dart';
+import 'package:page_transition/page_transition.dart';
 
 import 'Model/music_model.dart';
 import 'Utils/GlobalFuncs.dart';
@@ -8,16 +10,12 @@ import 'Utils/global_vars.dart';
 import 'globalwidget.dart';
 import 'main.dart';
 
-class PlaylistMaker extends StatefulWidget {
-  final int playlistNo;
-
-  PlaylistMaker({Key, key, this.playlistNo}) : super(key: key);
-
+class AllPlaylist extends StatefulWidget {
   @override
-  _PlaylistMakerState createState() => _PlaylistMakerState();
+  _AllPlaylistState createState() => _AllPlaylistState();
 }
 
-class _PlaylistMakerState extends State<PlaylistMaker> {
+class _AllPlaylistState extends State<AllPlaylist> {
   BuildContext context;
 
   Map<int, Map<int, Music>> _selectedMusic = new Map<int, Map<int, Music>>();
@@ -45,7 +43,7 @@ class _PlaylistMakerState extends State<PlaylistMaker> {
           ),
         ],
         title: GlobalFunc.boldtitleWidget('Montserrat_SemiBold',
-            "NOME SCALETTA", 20.0, GlobalFunc.colorFromHex('#522B83')),
+            "LISTA SCALETTE", 20.0, GlobalFunc.colorFromHex('#522B83')),
         flexibleSpace: GlobalFunc.appBarGradient(),
       ),
       body: Container(
@@ -62,10 +60,10 @@ class _PlaylistMakerState extends State<PlaylistMaker> {
           child: ListView.builder(
             itemCount: GlobalVars.TOTAL_SLOTS,
             itemBuilder: (BuildContext context, int index) {
-              var slotNo = index + 1;
-              Map<int, Music> playlist = _selectedMusic[slotNo];
+              var playlistNo = index + 1;
+              Map<int, Music> playlist = _selectedMusic[playlistNo];
 //              return slot2(music, slotNo);
-              return slot(slotNo);
+              return slot(playlistNo);
             },
           ),
         ),
@@ -77,7 +75,7 @@ class _PlaylistMakerState extends State<PlaylistMaker> {
     );
   }
 
-  Widget slot(slotNo) {
+  Widget slot(playlistNo) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 5, horizontal: 18),
       child: GestureDetector(
@@ -93,7 +91,7 @@ class _PlaylistMakerState extends State<PlaylistMaker> {
                     Container(
                         child: new CircleAvatar(
                           child: Text(
-                            '$slotNo',
+                            '$playlistNo',
                             style: TextStyle(color: Colors.white),
                           ),
                           radius: 63,
@@ -138,13 +136,19 @@ class _PlaylistMakerState extends State<PlaylistMaker> {
           ],
         ),
         onTap: () {
-          Navigator.of(this.context)
-              .push(MaterialPageRoute(
-                  builder: (context) => new SongBrowser(
-                        slotNo: slotNo,
-                      )))
+          Navigator.push(
+                  context,
+                  PageTransition(
+                    type: PageTransitionType.downToUp,
+                    child: PlaylistMaker(
+                      playlistNo: playlistNo,
+                    ),
+                  ))
               .then((value) =>
                   setState(() => _selectedMusic = GlobalVars.playlist));
+
+//          Navigator.of(this.context).push(_createRoute(playlistNo)).then(
+//              (value) => setState(() => _selectedMusic = GlobalVars.playlist));
         },
       ),
     );
@@ -242,6 +246,28 @@ class _PlaylistMakerState extends State<PlaylistMaker> {
           ),
         ),
       ),
+    );
+  }
+
+  Route _createRoute(playlistNo) {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) =>
+          new PlaylistMaker(
+        playlistNo: playlistNo,
+      ),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        var begin = Offset(0.0, 1.0);
+        var end = Offset.zero;
+        var curve = Curves.ease;
+
+        var tween =
+            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+        return SlideTransition(
+          position: animation.drive(tween),
+          child: child,
+        );
+      },
     );
   }
 }
